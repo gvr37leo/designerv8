@@ -16,7 +16,7 @@ class DetailView{
     tabs:Tabs
     attributes: Attribute[]
     backrefs: Attribute[]
-    onMountFinished: EventSystem<unknown>
+    // onMountFinished: EventSystem<unknown>
     
     rootelement:HTMLElement
     duplicatebuttonElement: HTMLElement
