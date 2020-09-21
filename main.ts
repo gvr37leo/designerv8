@@ -17,7 +17,17 @@
 
 // var designer = new Designer()
 
-var datadef = new AppDef('companys',null,false,)
+//this definition should be read from database
+//maybe cut appdef
+var datadef = new AppDef('companys',null,false,null)
+var people = new ObjDef('people',datadef._id,false,null,false)
+var companys = new ObjDef('companys')
+var personWorksAtCompany = new ObjDef('personsWorksAt')
+var industrys = new ObjDef('industrys')
+
+
+var dataknots:Knot[] = []
+var datadesigner = new Designer(dataknots,'data')
 
 
 
@@ -44,13 +54,17 @@ var pointsToObjectDef = new Attribute('pointsToObject',attributedefinition._id,f
 
 var datatypedefinition = new ObjDef('datatype',selfdef._id,false,null,false)
 
+var knotDef = new ObjDef('knot',selfdef._id,false,null,false)
+
+
 generateKnotAttributes(selfdef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
 generateKnotAttributes(objectdefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
 generateKnotAttributes(attributedefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
 generateKnotAttributes(datatypedefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
+generateKnotAttributes(knotDef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
 
 var metaknots:Knot[] = [selfdef,datatypeholder,stringDef,dateDef,rangeDef,numberDef,pointerDef,idDef,booleanDef,objectdefinition,allowAsRootNode,attributedefinition,datatypeAttributeDef,pointsToObjectDef,]
-// var datadesigner = new Designer(null,'data')
+
 var metadesigner = new Designer(metaknots,'metadata')
 //need something to identify objs,attributes,appdefs and datatypes for rendering (maybe in appdef set ids of each type, or hardcoded)
 

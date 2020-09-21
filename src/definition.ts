@@ -25,14 +25,15 @@ function generateKnotAttributes(objDef:Knot,string:string,date:string,range:stri
     var res:Attribute[] = []
     res.push(new Attribute('_id',objDef._id,false,null,id,null))
     res.push(new Attribute('name',objDef._id,false,null,string,null))
-    res.push(new Attribute('parent',objDef._id,false,null,pointer,'null'))//knot?
-    res.push(new Attribute('objdef',objDef._id,false,null,pointer,'null'))//objdef
+    res.push(new Attribute('parent',objDef._id,false,null,pointer,'null'))//knot? pointer value
+    res.push(new Attribute('objdef',objDef._id,false,null,pointer,'null'))//objdef type the pointer points too
     res.push(new Attribute('isList',objDef._id,false,null,boolean,null))
     res.push(new Attribute('listTypeObjdef',objDef._id,false,null,pointer,'null'))//objdef
     res.push(new Attribute('lastUpdated',objDef._id,false,null,date,null))
     res.push(new Attribute('createdAt',objDef._id,false,null,date,null))
     return res
 }
+
 
 class AppDef extends Knot{
     
