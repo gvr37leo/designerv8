@@ -27,104 +27,104 @@ function start(){
         let db = client.db(databasename)
         
 
-        app.post('/api/export', function(req, res){
-            let appdef = req.body.appdef
-            let promises = []
-            let exportresult = {}
-            for(let objdef of appdef.objdefinitions){
-                promises.push(db.collection(objdef.name).find({}).toArray())
-            }
-            Promise.all(promises).then(collections => {
-                for(let i = 0; i < collections.length; i++){
-                    exportresult[appdef.objdefinitions[i].name] = collections[i]
-                }
-                res.send(exportresult)
-            })
-        })
+        // app.post('/api/export', function(req, res){
+        //     let appdef = req.body.appdef
+        //     let promises = []
+        //     let exportresult = {}
+        //     for(let objdef of appdef.objdefinitions){
+        //         promises.push(db.collection(objdef.name).find({}).toArray())
+        //     }
+        //     Promise.all(promises).then(collections => {
+        //         for(let i = 0; i < collections.length; i++){
+        //             exportresult[appdef.objdefinitions[i].name] = collections[i]
+        //         }
+        //         res.send(exportresult)
+        //     })
+        // })
 
-        app.post('/api/search/:object', function(req, res){
-            let collection = db.collection(req.params.object)
-            let query = req.body;
-            if(query.filter._id){
-                query.filter._id = new mongodb.ObjectID(query.filter._id)
-            }
-            collection.find(query.filter).sort(query.sort).skip(query.paging.skip * query.paging.limit).limit(query.paging.limit).toArray(function(err, result){
-                collection.countDocuments({}).then((count) => {
+        // app.post('/api/search/:object', function(req, res){
+        //     let collection = db.collection(req.params.object)
+        //     let query = req.body;
+        //     if(query.filter._id){
+        //         query.filter._id = new mongodb.ObjectID(query.filter._id)
+        //     }
+        //     collection.find(query.filter).sort(query.sort).skip(query.paging.skip * query.paging.limit).limit(query.paging.limit).toArray(function(err, result){
+        //         collection.countDocuments({}).then((count) => {
 
-                    let reffedObjectPointers = {}
-                    let reffedObjectsResult = {}
+        //             let reffedObjectPointers = {}
+        //             let reffedObjectsResult = {}
 
-                    for(let dereference of query.dereferences){
-                        let set = assignifnull(reffedObjectPointers,dereference.collection,new Set())
-                        let foreignkeys = result.filter(item => item[dereference.attribute]).map(item => item[dereference.attribute])
-                        foreignkeys.forEach(fk => set.add(fk))
-                    }
+        //             for(let dereference of query.dereferences){
+        //                 let set = assignifnull(reffedObjectPointers,dereference.collection,new Set())
+        //                 let foreignkeys = result.filter(item => item[dereference.attribute]).map(item => item[dereference.attribute])
+        //                 foreignkeys.forEach(fk => set.add(fk))
+        //             }
 
-                    let promises = []
-                    for(let [key,values] of Object.entries(reffedObjectPointers)){
-                        let derefcollection = db.collection(key)
-                        promises.push(new Promise((res,rej) => {
-                            derefcollection.find({_id:{$in:Array.from(values.values()).map(fk => new mongodb.ObjectID(fk))}}).toArray((err,result2) => {
-                                reffedObjectsResult[key] = result2
-                                res()
-                            })
-                        }))
-                    }
+        //             let promises = []
+        //             for(let [key,values] of Object.entries(reffedObjectPointers)){
+        //                 let derefcollection = db.collection(key)
+        //                 promises.push(new Promise((res,rej) => {
+        //                     derefcollection.find({_id:{$in:Array.from(values.values()).map(fk => new mongodb.ObjectID(fk))}}).toArray((err,result2) => {
+        //                         reffedObjectsResult[key] = result2
+        //                         res()
+        //                     })
+        //                 }))
+        //             }
 
-                    Promise.all(promises).then(() => {
-                        for(let key of Object.keys(reffedObjectsResult)){
-                            reffedObjectsResult[key] = reffedObjectsResult[key].reduce((acc,obj) => {
-                                acc[obj._id] = obj
-                                return acc
-                            },{})
-                        }
-                        res.send({
-                            data:result,
-                            collectionSize:count,
-                            prelimitsize:1,
-                            reffedObjects:reffedObjectsResult,
-                        });
-                    })
-                    // for(let dereference of query.dereferences){
+        //             Promise.all(promises).then(() => {
+        //                 for(let key of Object.keys(reffedObjectsResult)){
+        //                     reffedObjectsResult[key] = reffedObjectsResult[key].reduce((acc,obj) => {
+        //                         acc[obj._id] = obj
+        //                         return acc
+        //                     },{})
+        //                 }
+        //                 res.send({
+        //                     data:result,
+        //                     collectionSize:count,
+        //                     prelimitsize:1,
+        //                     reffedObjects:reffedObjectsResult,
+        //                 });
+        //             })
+        //             // for(let dereference of query.dereferences){
                         
                         
-                    //     let derefcollection = db.collection(dereference.collection)
-                    //     derefcollection.find({_id:{$in:foreignkeys}}).toArray((err,result2) => {
+        //             //     let derefcollection = db.collection(dereference.collection)
+        //             //     derefcollection.find({_id:{$in:foreignkeys}}).toArray((err,result2) => {
                             
-                    //     })
-                    // }
+        //             //     })
+        //             // }
 
 
-                    // type Dereference = {
-                    //     attribute:string
-                    //     collection:string
-                    //     dereferences:Dereference[]
-                    // }
+        //             // type Dereference = {
+        //             //     attribute:string
+        //             //     collection:string
+        //             //     dereferences:Dereference[]
+        //             // }
 
-                    // {
-                    //     persoon:set[id,id,id],
-                    //     bedrijf:set[id,id,id],
-                    // }
+        //             // {
+        //             //     persoon:set[id,id,id],
+        //             //     bedrijf:set[id,id,id],
+        //             // }
 
-                    // {
-                    //     persoon:{
-                    //         id:{},
-                    //         id:{},
-                    //     },
-                    //     bedrijf:{
-                    //         id:{},
-                    //         id:{},
-                    //     }
-                    // }
+        //             // {
+        //             //     persoon:{
+        //             //         id:{},
+        //             //         id:{},
+        //             //     },
+        //             //     bedrijf:{
+        //             //         id:{},
+        //             //         id:{},
+        //             //     }
+        //             // }
 
                     
-                })
+        //         })
 
                 
-            })
+        //     })
 
             
-        })
+        // })
     
         // todo also create the knots(maybe check to make sure knots arent created directly)
         app.post('/api/:object', function(req, res){

@@ -6,6 +6,7 @@ class AppDef{
 
     attributeIdentifier:string
     objIdentifier:string
+    debug:boolean = true
 }
 
 class ObjDef{
@@ -30,7 +31,7 @@ class Datatype{
 }
 
 class Knot{
-    _id:string//highlights
+    _id:string
     name:string
     parent:string//parentknot can be any type
     objdef:string//own type
