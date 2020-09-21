@@ -126,13 +126,7 @@ function start(){
             
         })
     
-        app.get('/api/:object/:id', function(req, res){
-            let collection = db.collection(req.params.object)
-            collection.findOne({_id:new mongodb.ObjectID(req.params.id)}).then(function(doc){
-                res.send(doc);
-            })
-        })
-    
+        // todo also create the knots(maybe check to make sure knots arent created directly)
         app.post('/api/:object', function(req, res){
             let collection = db.collection(req.params.object)
     
@@ -150,6 +144,7 @@ function start(){
             });
         })
     
+        //no action needed, even works for updating knots
         app.put('/api/:object/:id', function(req, res){
             let collection = db.collection(req.params.object)
     
@@ -161,6 +156,8 @@ function start(){
             })
         })
     
+
+        //deletion should be done via knotid, so :object isn't nescessary, also delete the children knots
         app.delete('/api/:object', function(req, res){
             let collection = db.collection(req.params.object)
     
