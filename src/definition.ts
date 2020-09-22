@@ -10,7 +10,6 @@ class Knot{
         public name:string,
         public parent:string,//parentknot can be any type
         public objdef:string,//own type
-        // public objid:string,//not nescessary if knot is embedded
     
         public isList:boolean,//data will not be shown in contenttree and the knot will show a table of its children
         public listTypeObjdef:string,
@@ -21,16 +20,16 @@ class Knot{
     }
 }
 
-function generateKnotAttributes(objDef:Knot,string:string,date:string,range:string,number:string,pointer:string,id:string,boolean:string){
+function generateKnotAttributes(knot:Knot,string:string,date:string,range:string,number:string,pointer:string,id:string,boolean:string,objdef:string){
     var res:Attribute[] = []
-    res.push(new Attribute('_id',objDef._id,false,null,id,null))
-    res.push(new Attribute('name',objDef._id,false,null,string,null))
-    res.push(new Attribute('parent',objDef._id,false,null,pointer,'null'))//knot? pointer value
-    res.push(new Attribute('objdef',objDef._id,false,null,pointer,'null'))//objdef type the pointer points too
-    res.push(new Attribute('isList',objDef._id,false,null,boolean,null))
-    res.push(new Attribute('listTypeObjdef',objDef._id,false,null,pointer,'null'))//objdef
-    res.push(new Attribute('lastUpdated',objDef._id,false,null,date,null))
-    res.push(new Attribute('createdAt',objDef._id,false,null,date,null))
+    res.push(new Attribute('_id',knot._id,false,null,id,null))
+    res.push(new Attribute('name',knot._id,false,null,string,null))
+    res.push(new Attribute('parent',knot._id,false,null,pointer,null))//knot?pointer to parent could be any object so it should just search on the complete knot set
+    res.push(new Attribute('objdef',knot._id,false,null,pointer,objdef))//objdef type the pointer points too
+    res.push(new Attribute('isList',knot._id,false,null,boolean,null))
+    res.push(new Attribute('listTypeObjdef',knot._id,false,null,pointer,objdef))//objdef
+    res.push(new Attribute('lastUpdated',knot._id,false,null,date,null))
+    res.push(new Attribute('createdAt',knot._id,false,null,date,null))
     return res
 }
 

@@ -15,26 +15,14 @@
 //reload the data designer when you edit in metadatadesigner
 //maybe master listviews for each objdef
 
-// var designer = new Designer()
-
-//this definition should be read from database
-//maybe cut appdef
-var datadef = new AppDef('companys',null,false,null)
-var people = new ObjDef('people',datadef._id,false,null,false)
-var companys = new ObjDef('companys')
-var personWorksAtCompany = new ObjDef('personsWorksAt')
-var industrys = new ObjDef('industrys')
-
-
-var dataknots:Knot[] = []
-var datadesigner = new Designer(dataknots,'data')
 
 
 
 
 
 
-var selfdef = new AppDef('selfdef',null,false,null)
+
+var selfdef = new ObjDef('appdef',null,false,null,true)
 
 var datatypeholder = new Knot('datatypes',selfdef._id,'99',true,'4')
 var stringDef = new Datatype('string',datatypeholder._id,false,null)
@@ -57,16 +45,39 @@ var datatypedefinition = new ObjDef('datatype',selfdef._id,false,null,false)
 var knotDef = new ObjDef('knot',selfdef._id,false,null,false)
 
 
-generateKnotAttributes(selfdef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
-generateKnotAttributes(objectdefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
-generateKnotAttributes(attributedefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
-generateKnotAttributes(datatypedefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
-generateKnotAttributes(knotDef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id)
+generateKnotAttributes(selfdef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
+generateKnotAttributes(objectdefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
+generateKnotAttributes(attributedefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
+generateKnotAttributes(datatypedefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
+generateKnotAttributes(knotDef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
 
 var metaknots:Knot[] = [selfdef,datatypeholder,stringDef,dateDef,rangeDef,numberDef,pointerDef,idDef,booleanDef,objectdefinition,allowAsRootNode,attributedefinition,datatypeAttributeDef,pointsToObjectDef,]
 
-var metadesigner = new Designer(metaknots,'metadata')
+// var metadesigner = new Designer(metaknots,'metadata')
 //need something to identify objs,attributes,appdefs and datatypes for rendering (maybe in appdef set ids of each type, or hardcoded)
+
+
+
+
+
+//this definition should be read from database
+//reference definitions from metadata designer
+
+var rootdef = new ObjDef('root',null,false,null,true)
+
+var peopledef = new ObjDef('people',rootdef._id,false,null,false)
+var phonenumberdef = new Attribute('plate',peopledef._id,false,null,stringDef._id,null)
+var frienddef = new Attribute('friend',peopledef._id,false,null,pointerDef._id,peopledef._id)
+
+var cardef = new ObjDef('cars',rootdef._id,false,null,false)
+var platedef = new Attribute('plate',cardef._id,false,null,stringDef._id,null)
+
+var dataknots:Knot[] = [rootdef,peopledef,phonenumberdef,frienddef,cardef,platedef]
+dataknots.push(...generateKnotAttributes(peopledef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)) 
+dataknots.push(...generateKnotAttributes(cardef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id))
+var datadesigner = new Designer(dataknots,'data')
+this.document.body.appendChild(datadesigner.rootElement)
+
 
 
 

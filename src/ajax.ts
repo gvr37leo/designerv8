@@ -1,12 +1,12 @@
-function create(knotid:string):Promise<any>{
+function create(knot:Knot):Promise<string>{
     return null
 }
 
-function search(query:Query):Promise<any[]>{
+function search(query:Query):Promise<Knot[]>{
     return null
 }
 
-async function get(knotid:string):Promise<any>{
+async function get(knotid:string):Promise<Knot>{
     var res = await search(genSimpleQuery('_id',knotid))
     return res[0]
 }

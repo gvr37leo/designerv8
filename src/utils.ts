@@ -13,3 +13,10 @@ function getObjIdProp(appdef:AppDef,obj:any){
 function getAttributeIdProp(appdef:AppDef,obj:any){
 
 }
+
+function emptyHtmlElement(el:HTMLElement){
+    while(el.firstChild != null){
+        el.removeChild(el.firstChild)
+    }
+
+}
