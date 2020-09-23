@@ -153,18 +153,17 @@ function start(){
         })
 
         async function findAncestors(knot){
-
+            var res = []
             var parent = findParent(knot)
-            if(parent == null){
-
-            }else{
-                
+            while(parent != null){
+                res.push(parent)
+                parent = await findParent(parent)
             }
+            return res
         }
 
         async function findParent(knot){
-            
-            var res = await db.collection('data').findOne({_id:knot._id})
+            var res = await db.collection('data').findOne({_id:knot.parent})
             return res
         }
 
