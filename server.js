@@ -143,29 +143,51 @@ function start(){
 
         app.delete('/api/:object',async function(req, res){
 
-            var res = await db.collection('data').aggregate([
-                { $match: {
-                    parent: null
-                }},
-                { $graphLookup: {
-                    from: "data",
-                    startWith: "$_id",
-                    connectFromField: "_id",
-                    connectToField: "parent",
-                    as: "children",
-                    depthField: "depth",
-                    maxDepth:100,
-                }}
-            ]);
-
-            // let collection = db.collection(req.params.object)
-            // try {
-            //     var result = await collection.deleteMany({_id: { $in: req.body.map(id => mongodb.ObjectID(id))}})
-            //     res.send({status:'success'});
-            // } catch (error) {
-            //     res.status(500).send(error)
-            // }
+            let collection = db.collection(req.params.object)
+            try {
+                var result = await collection.deleteMany({_id: { $in: req.body.map(id => mongodb.ObjectID(id))}})
+                res.send({status:'success'});
+            } catch (error) {
+                res.status(500).send(error)
+            }
         })
+
+        async function findAncestors(knot){
+
+            var parent = findParent(knot)
+            if(parent == null){
+
+            }else{
+                
+            }
+        }
+
+        async function findParent(knot){
+            
+            var res = await db.collection('data').findOne({_id:knot._id})
+            return res
+        }
+
+        async function findKnot(knotid){
+            return await db.collection('data').findOne({_id:new mongodb.ObjectID(knotid)})
+        }
+
+        async function findDescendants(knotid){
+            var children = await findChildren()
+            var res = children.slice()
+
+            for(var child of children){
+                var childsdescendants = await findDescendants(child._id)
+                res = res.concat(childsdescendants)
+            }
+            return res
+        }
+
+        async function findChildren(knotid){
+            var res = await db.collection('data').find({parent:knotid}).toArray()
+            return res
+        }
+
         
         app.get('/*', function(req, res, next) {
             res.sendFile(path.resolve('index.html'));
