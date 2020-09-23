@@ -22,27 +22,31 @@
 
 
 
-var selfdef = new ObjDef('appdef',null,false,null,true)
+let selfdef = new ObjDef('appdef',null,false,null,true)
 
-var datatypeholder = new Knot('datatypes',selfdef._id,'99',true,'4')
-var stringDef = new Datatype('string',datatypeholder._id,false,null)
-var dateDef = new Datatype('date',datatypeholder._id,false,null)
-var rangeDef = new Datatype('range',datatypeholder._id,false,null)
-var numberDef = new Datatype('number',datatypeholder._id,false,null)
-var pointerDef = new Datatype('pointer',datatypeholder._id,false,null)
-var idDef = new Datatype('id',datatypeholder._id,false,null)
-var booleanDef = new Datatype('boolean',datatypeholder._id,false,null)
+let datatypedefinition = new ObjDef('datatype',selfdef._id,false,null,false)
 
-var objectdefinition = new ObjDef('objdef',selfdef._id,false,null,false)
-var allowAsRootNode = new Attribute('allowAsRootNode',objectdefinition._id,false,null,booleanDef._id,null)
+let datatypeholder = new Knot('datatypes',selfdef._id,'99')
+let stringDef = new Datatype('string',datatypeholder._id)
+let dateDef = new Datatype('date',datatypeholder._id)
+let rangeDef = new Datatype('range',datatypeholder._id)
+let numberDef = new Datatype('number',datatypeholder._id)
+let pointerDef = new Datatype('pointer',datatypeholder._id)
+let idDef = new Datatype('id',datatypeholder._id)
+let booleanDef = new Datatype('boolean',datatypeholder._id)
 
-var attributedefinition = new ObjDef('attribute',selfdef._id,false,null,false)
-var datatypeAttributeDef = new Attribute('datatype',attributedefinition._id,false,null,pointerDef._id,datatypedefinition._id)
-var pointsToObjectDef = new Attribute('pointsToObject',attributedefinition._id,false,null,pointerDef._id,datatypedefinition._id)
+let objectdefinition = new ObjDef('objdef',selfdef._id,false,null,false)
+let allowAsRootNode = new Attribute('allowAsRootNode',objectdefinition._id,booleanDef._id,null)
+let islist = new Attribute('isList',objectdefinition._id,booleanDef._id,null)
+let listtype = new Attribute('listTypeObjdef',objectdefinition._id,pointerDef._id,objectdefinition._id)
 
-var datatypedefinition = new ObjDef('datatype',selfdef._id,false,null,false)
+let attributedefinition = new ObjDef('attribute',selfdef._id,false,null,false)
+let datatypeAttributeDef = new Attribute('datatype',attributedefinition._id,pointerDef._id,datatypedefinition._id)
+let pointsToObjectDef = new Attribute('pointsToObject',attributedefinition._id,pointerDef._id,datatypedefinition._id)
 
-var knotDef = new ObjDef('knot',selfdef._id,false,null,false)
+
+
+let knotDef = new ObjDef('knot',selfdef._id,false,null,false)
 
 
 generateKnotAttributes(selfdef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
@@ -51,9 +55,9 @@ generateKnotAttributes(attributedefinition,stringDef._id,dateDef._id,rangeDef._i
 generateKnotAttributes(datatypedefinition,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
 generateKnotAttributes(knotDef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)
 
-var metaknots:Knot[] = [selfdef,datatypeholder,stringDef,dateDef,rangeDef,numberDef,pointerDef,idDef,booleanDef,objectdefinition,allowAsRootNode,attributedefinition,datatypeAttributeDef,pointsToObjectDef,]
+let metaknots:Knot[] = [selfdef,datatypeholder,stringDef,dateDef,rangeDef,numberDef,pointerDef,idDef,booleanDef,objectdefinition,allowAsRootNode,attributedefinition,datatypeAttributeDef,pointsToObjectDef,]
 
-// var metadesigner = new Designer(metaknots,'metadata')
+// let metadesigner = new Designer(metaknots,'metadata')
 //need something to identify objs,attributes,appdefs and datatypes for rendering (maybe in appdef set ids of each type, or hardcoded)
 
 
@@ -63,19 +67,20 @@ var metaknots:Knot[] = [selfdef,datatypeholder,stringDef,dateDef,rangeDef,number
 //this definition should be read from database
 //reference definitions from metadata designer
 
-var rootdef = new ObjDef('root',null,false,null,true)
+let rootdef = new ObjDef('root',null,false,null,true)
 
-var peopledef = new ObjDef('people',rootdef._id,false,null,false)
-var phonenumberdef = new Attribute('plate',peopledef._id,false,null,stringDef._id,null)
-var frienddef = new Attribute('friend',peopledef._id,false,null,pointerDef._id,peopledef._id)
+let persondef = new ObjDef('person',rootdef._id,false,null,false)
+let phonenumberdef = new Attribute('phonenumber',persondef._id,stringDef._id,null)
+let frienddef = new Attribute('friend',persondef._id,pointerDef._id,persondef._id)
 
-var cardef = new ObjDef('cars',rootdef._id,false,null,false)
-var platedef = new Attribute('plate',cardef._id,false,null,stringDef._id,null)
+let cardef = new ObjDef('car',rootdef._id,false,null,false)
+let platedef = new Attribute('plate',cardef._id,stringDef._id,null)
 
-var dataknots:Knot[] = [rootdef,peopledef,phonenumberdef,frienddef,cardef,platedef]
-dataknots.push(...generateKnotAttributes(peopledef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)) 
+let dataknots:Knot[] = [rootdef,persondef,phonenumberdef,frienddef,cardef,platedef]
+dataknots.push(...generateKnotAttributes(rootdef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)) 
+dataknots.push(...generateKnotAttributes(persondef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)) 
 dataknots.push(...generateKnotAttributes(cardef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id))
-var datadesigner = new Designer(dataknots,'data')
+let datadesigner = new Designer(dataknots,'data')
 this.document.body.appendChild(datadesigner.rootElement)
 
 

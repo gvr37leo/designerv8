@@ -9,9 +9,9 @@
 /// <reference path="./views/knotView.ts" />
 /// <reference path="./eventqueue.ts" />
 /// <reference path="./utils.ts" />
+/// <reference path="../node_modules/vectorx/vector.ts" />
 /// <reference path="../node_modules/eventsystemx/EventSystem.ts" />
 /// <reference path="../node_modules/utilsx/utils.ts" />
-
 
 
 class Designer{
@@ -19,8 +19,8 @@ class Designer{
     
     router:Router
     contentTree:ContentTree
-    detalViews = new Map<string,DetailView>()
-    listViews = new Map<string,ListView>()
+    detalViewsMap = new Map<string,DetailView>()
+    listViewsMap = new Map<string,ListView>()
     eventQueue:EventQueue = new EventQueue()
 
     appdef: AppDef
@@ -47,7 +47,7 @@ class Designer{
         this.navbarelement = this.rootElement.querySelector('#navbar')
         this.viewcontainer = this.rootElement.querySelector('#viewcontainer')
         this.contenttreeElement = this.rootElement.querySelector('#contenttree')
-
+        
         this.router = new Router()
 
         this.appdef = knots.find(k => k.objdef == '1') as AppDef
@@ -55,27 +55,28 @@ class Designer{
         this.datatypes = knots.filter(k => k.objdef == '4') as Datatype[]
         this.attributes = knots.filter(k => k.objdef == '3') as Attribute[]
 
-        for(var obj of this.objdefinitions){
-            var objattributes = this.attributes.filter(k => k.parent == obj._id)
+        for(let obj of this.objdefinitions){
+            let objattributes = this.attributes.filter(k => k.parent == obj._id)
 
-            var dv = new DetailView(this,obj)
-            var lv = new ListView(this,obj)
+            let dv = new DetailView(this,obj)
+            let lv = new ListView(this,obj)
+            this.detalViewsMap.set(obj._id,dv)
+            this.listViewsMap.set(obj._id,lv)
 
         }
 
+        this.contentTree = new ContentTree(this)
+        this.contenttreeElement.appendChild(this.contentTree.rootElement)
+        this.contentTree.loadChildren(null)
+
         this.eventQueue.listen(EventTypes.create,(data) => {
             
-            var knot = new Knot('blank',this.contentTree.selectedKnot,data.objdefid,false,null)
-            create(knot).then(id => {
-                knot._id = id
-                this.mountAndLoad(knot)
-                
-            })
+            
             //get currently selected node
         })
 
         this.router.listen(new RegExp(`^/data/([a-zA-Z0-9]+)$`),(res) => {
-            get(res[2]).then(knot => {
+            get(res[1]).then(knot => {
                 this.mountAndLoad(knot)
             })
         })
@@ -90,14 +91,22 @@ class Designer{
     }
 
     mountAndLoad(knot:Knot){
-        var dv = this.detalViews.get(knot.objdef)
+        let dv = this.detalViewsMap.get(knot.objdef)
         this.mount(dv)
-        dv.load(knot)
+        dv.loadData(knot)
         
     }
 
+    getObjDef(objdefid:string):ObjDef{
+        return this.objdefinitions.find(o => o._id == objdefid)
+    }
+
     getAttributes(objdefid:string):Attribute[]{
-        return this.attributes.filter(a => a.objdef == objdefid)
+        return this.attributes.filter(a => a.parent == objdefid)
+    }
+
+    navigateToKnot(knotid:string){
+        this.router.navigate(`/data/${knotid}`)
     }
 
 }

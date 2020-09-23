@@ -26,145 +26,145 @@ function start(){
         console.log('connected to mongo');
         let db = client.db(databasename)
         
-
-        // app.post('/api/export', function(req, res){
-        //     let appdef = req.body.appdef
-        //     let promises = []
-        //     let exportresult = {}
-        //     for(let objdef of appdef.objdefinitions){
-        //         promises.push(db.collection(objdef.name).find({}).toArray())
-        //     }
-        //     Promise.all(promises).then(collections => {
-        //         for(let i = 0; i < collections.length; i++){
-        //             exportresult[appdef.objdefinitions[i].name] = collections[i]
-        //         }
-        //         res.send(exportresult)
-        //     })
-        // })
-
-        // app.post('/api/search/:object', function(req, res){
-        //     let collection = db.collection(req.params.object)
-        //     let query = req.body;
-        //     if(query.filter._id){
-        //         query.filter._id = new mongodb.ObjectID(query.filter._id)
-        //     }
-        //     collection.find(query.filter).sort(query.sort).skip(query.paging.skip * query.paging.limit).limit(query.paging.limit).toArray(function(err, result){
-        //         collection.countDocuments({}).then((count) => {
-
-        //             let reffedObjectPointers = {}
-        //             let reffedObjectsResult = {}
-
-        //             for(let dereference of query.dereferences){
-        //                 let set = assignifnull(reffedObjectPointers,dereference.collection,new Set())
-        //                 let foreignkeys = result.filter(item => item[dereference.attribute]).map(item => item[dereference.attribute])
-        //                 foreignkeys.forEach(fk => set.add(fk))
-        //             }
-
-        //             let promises = []
-        //             for(let [key,values] of Object.entries(reffedObjectPointers)){
-        //                 let derefcollection = db.collection(key)
-        //                 promises.push(new Promise((res,rej) => {
-        //                     derefcollection.find({_id:{$in:Array.from(values.values()).map(fk => new mongodb.ObjectID(fk))}}).toArray((err,result2) => {
-        //                         reffedObjectsResult[key] = result2
-        //                         res()
-        //                     })
-        //                 }))
-        //             }
-
-        //             Promise.all(promises).then(() => {
-        //                 for(let key of Object.keys(reffedObjectsResult)){
-        //                     reffedObjectsResult[key] = reffedObjectsResult[key].reduce((acc,obj) => {
-        //                         acc[obj._id] = obj
-        //                         return acc
-        //                     },{})
-        //                 }
-        //                 res.send({
-        //                     data:result,
-        //                     collectionSize:count,
-        //                     prelimitsize:1,
-        //                     reffedObjects:reffedObjectsResult,
-        //                 });
-        //             })
-        //             // for(let dereference of query.dereferences){
-                        
-                        
-        //             //     let derefcollection = db.collection(dereference.collection)
-        //             //     derefcollection.find({_id:{$in:foreignkeys}}).toArray((err,result2) => {
-                            
-        //             //     })
-        //             // }
+        app.post('/api/search/:object',async function(req, res){
+            let collection = db.collection(req.params.object)
+            let query = req.body;
+            
+            var filter = {}
+            var filtertypes = {
+                '>':'$gt',
+                '<':'$lt',
+                '=':'$eq',
+                '!=':'$ne',
+                'like':'$regex',
+                'regex':'$regex',
+            }
+            for(var opt of query.filter){
+                if(opt.propname == '_id'){
+                    filter[opt.propname] = {[[filtertypes[opt.type]]]:new mongodb.ObjectID(opt.value)}
+                }else{
+                    filter[opt.propname] = {[[filtertypes[opt.type]]]:opt.value}
+                }
+            }
+            var sort = {}
+            for(var opt of query.sort){
+                sort[opt.propname] = opt.direction 
+            }
 
 
-        //             // type Dereference = {
-        //             //     attribute:string
-        //             //     collection:string
-        //             //     dereferences:Dereference[]
-        //             // }
+            try {
+                var result = await collection.find(filter).sort(sort).skip(query.paging.skip * query.paging.limit).limit(query.paging.limit).toArray()
+                var count = await collection.countDocuments()
+                res.send({
+                    data:result,
+                    collectionSize:count,
+                    prelimitsize:1,
+                });    
+            } catch (error) {
+                res.status(500).send(error)
+            }
+            
 
-        //             // {
-        //             //     persoon:set[id,id,id],
-        //             //     bedrijf:set[id,id,id],
-        //             // }
+        })
 
-        //             // {
-        //             //     persoon:{
-        //             //         id:{},
-        //             //         id:{},
-        //             //     },
-        //             //     bedrijf:{
-        //             //         id:{},
-        //             //         id:{},
-        //             //     }
-        //             // }
 
-                    
-        //         })
 
                 
-        //     })
+        // type Query = {
+        //     filter:Filter[]
+        //     sort:QuerySort[]
+        //     dereferences:Dereference[]
+        //     paging:{
+        //         skip:number
+        //         limit:number
+        //     }
+        // }
 
-            
-        // })
+        // enum FilterType{//range is done with multiple filters
+        //     equal = '=',less = '<',bigger = '>',notequal = '!=',regex = 'regex',like = 'like'
+        // }
+
+        // type QuerySort = {
+        //     propname:string
+        //     direction:number
+        // }
+
+        // type Filter = {
+        //     propname:string
+        //     type:FilterType
+        //     value:string
+        // }
+        // type Dereference = {
+        //     attribute:string
+        //     dereferences:Dereference[]
+        // }
+        // type QueryResult<T> = {
+        //     data:T[]
+        //     collectionSize:number
+        //     prelimitsize:number
+        //     reffedObjects:any[]
+        // }
+
     
-        // todo also create the knots(maybe check to make sure knots arent created directly)
-        app.post('/api/:object', function(req, res){
+        app.post('/api/:object',async function(req, res){
             let collection = db.collection(req.params.object)
     
             for(let item of req.body){
                 delete item._id
                 item.createdAt = Date.now()
             }
+            try {
+                var result = await collection.insertMany(req.body)
+                res.send(Object.values(result.insertedIds).map(id => id.toString()))
+            } catch (error) {
+                res.status(500).send(error)
+            }
             
-            collection.insertMany(req.body, function(err, result){
-                if(err)res.send(err)
-                else res.send({
-                    status:'success',
-                    insertedIds:Object.values(result.insertedIds).map(id => id.toString()),
-                });
-            });
+
         })
     
-        //no action needed, even works for updating knots
-        app.put('/api/:object/:id', function(req, res){
+        app.put('/api/:object/:id',async function(req, res){
             let collection = db.collection(req.params.object)
     
             delete req.body._id
             req.body.lastupdate = new Date().getTime()
-            collection.updateOne({_id:new mongodb.ObjectID(req.params.id)}, {$set:req.body}, function(err, result){
-                if(err)res.send(err);
-                else res.send({status:'success'});
-            })
+            try {
+                var result = await collection.updateOne({_id:new mongodb.ObjectID(req.params.id)}, {$set:req.body})
+                res.send({status:'success'});
+            } catch (error) {
+                res.status(500).send(error)
+            }
         })
-    
 
-        //deletion should be done via knotid, so :object isn't nescessary, also delete the children knots
-        app.delete('/api/:object', function(req, res){
-            let collection = db.collection(req.params.object)
-    
-            collection.deleteMany({_id: { $in: req.body.map(id => mongodb.ObjectID(id))}}, function(err, result){
-                if(err)res.send(err)
-                else res.send({status:'success'});
-            })
+
+        //todo delete children
+        // https://stackoverflow.com/questions/50767930/mongodb-graphlookup-get-children-all-levels-deep-nested-result
+
+
+        app.delete('/api/:object',async function(req, res){
+
+            var res = await db.collection('data').aggregate([
+                { $match: {
+                    parent: null
+                }},
+                { $graphLookup: {
+                    from: "data",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "parent",
+                    as: "children",
+                    depthField: "depth",
+                    maxDepth:100,
+                }}
+            ]);
+
+            // let collection = db.collection(req.params.object)
+            // try {
+            //     var result = await collection.deleteMany({_id: { $in: req.body.map(id => mongodb.ObjectID(id))}})
+            //     res.send({status:'success'});
+            // } catch (error) {
+            //     res.status(500).send(error)
+            // }
         })
         
         app.get('/*', function(req, res, next) {

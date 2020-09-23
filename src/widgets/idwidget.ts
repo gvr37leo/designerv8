@@ -13,8 +13,7 @@ class IdWidget extends Widget{
     set(val: any) {
         var rootElement = this.rootElement as HTMLAnchorElement
         this.value = val
-        var obj = this.designer.getObjDef(this.attribute.belongsToObject)
-        rootElement.href = `/${obj.name}/${val}`
+        rootElement.href = `/data/${val}`
         rootElement.innerText = val
     }
 }

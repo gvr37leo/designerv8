@@ -1,4 +1,4 @@
-enum EventTypes{create,save,update,get,delete,detailviewmounted,listviewmounted,knotClicked}
+enum EventTypes{create,save,update,get,delete,detailviewmounted,listviewmounted,knotArrowClicked,knotNameClicked}
 class QueueEvent{
 
     constructor(

@@ -48,7 +48,7 @@ class DetailView{
                     <button id="savebutton">save</button>
                     <button id="deletebutton">delete</button>
                 </div>
-                <div id="widgetcontainer"></div>
+                <div id="widgetcontainer" style="display:flex; flex-direction:column;"></div>
                 <div id="tabscontainer"></div>
             </div>
         `)
@@ -62,33 +62,47 @@ class DetailView{
 
         this.duplicatebuttonElement.addEventListener('click',() => {
             //duplicate everything except for _id and createdAt
+            create(this.collectData()).then(res => {
+                this.designer.navigateToKnot(res)
+            })
             //just straight up collect the data from view and sent it to create
         })
         this.savebuttonElement.addEventListener('click',() => {
+            update(this.collectData())
             //get data from view and send it to update
         })
         this.deletebuttonElement.addEventListener('click',() => {
+            remove(this.collectData()._id)
             //get the id field and sent it to delete
         })
 
         this.attributes = this.designer.attributes.filter(a => a.parent == objdef._id)
         for(var attribute of this.attributes){
-            var widget:Widget = createWidget(attribute.dataType)
+            var widget:Widget = createWidget(attribute,designer)
             this.widgetMap.set(attribute._id,widget)
-            //create widget for each attribute and hang them in the view
+            var widgethull = string2html(`
+                <div>
+                    <label>
+                        ${attribute.name}
+                        <div id="asd"/>
+                    </label>
+                </div>
+            `)
+            widgethull.querySelector('#asd').appendChild(widget.rootElement)
+            this.widgetcontainer.appendChild(widgethull)
         }
         
     }
 
-    load(data:any){
+    loadData(data:any){
         var attributes = this.designer.getAttributes(this.objdef._id)
         for(var attribute of attributes){
             this.setAttributeData(attribute._id,data[attribute.name])
         }
     }
 
-    collectData():any{
-        var res = {}
+    collectData():Knot{
+        var res:any = {}
         var attributes = this.designer.getAttributes(this.objdef._id)
         for(var attribute of attributes){
             res[attribute.name] = this.getAttributeData(attribute._id)
@@ -98,7 +112,7 @@ class DetailView{
     
 
     getAttributeData(attributeid:string):any{
-        this.widgetMap.get(attributeid).get()
+        return this.widgetMap.get(attributeid).get()
     }
 
     setAttributeData(attributeid:string,data:any){

@@ -17,7 +17,7 @@ class KnotView{
         this.rootelement = string2html(`
             <div>
                 <div style="display:flex;">
-                    <div id="arrow" style="flex-grow:0; width:10px; cursor:pointer">arrow</div>
+                    <button id="arrow" style="flex-grow:0; cursor:pointer; width:28px;">arrow</button>
                     <div id="name" style="flex-grow:1;" >name</div>
                 </div>
                 <div id="children" style="display:none; margin-left:20px;"></div>
@@ -33,11 +33,13 @@ class KnotView{
 
         this.arrowelement.addEventListener('click', e => {
             this.toggle()
+            this.designer.eventQueue.trigger(EventTypes.knotArrowClicked,{knotid:this.knot._id})
         })
 
         this.nameelement.addEventListener('click', e => {
-            this.designer.eventQueue.trigger(EventTypes.knotClicked,{knotid:this.knot._id})
+            this.designer.eventQueue.trigger(EventTypes.knotNameClicked,{knotid:this.knot._id})
         })
+        return this
     }
 
     

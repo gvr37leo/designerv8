@@ -21,26 +21,26 @@ function emptyHtmlElement(el:HTMLElement){
 
 }
 
-function createWidget(dataTypename:string,attribute:Attribute,designer:Designer){
-    if(dataTypename == 'boolean'){
+function createWidget(attribute:Attribute,designer:Designer){
+    if(attribute.dataType == booleanDef._id){
         return new BooleanWidget()
     }
-    if(dataTypename == 'date'){
+    if(attribute.dataType == dateDef._id){
         return new DateWidget()
     }
-    if(dataTypename == 'id'){
+    if(attribute.dataType == idDef._id){
         return new IdWidget(attribute,designer)
     }
-    if(dataTypename == 'number'){
+    if(attribute.dataType == numberDef._id){
         return new NumberWidget()
     }
-    if(dataTypename == 'pointer'){
+    if(attribute.dataType == pointerDef._id){
         return new PointerWidget(attribute,designer)
     }
-    if(dataTypename == 'range'){
+    if(attribute.dataType == rangeDef._id){
         return new RangeWidget()
     }
-    if(dataTypename == 'string'){
+    if(attribute.dataType == stringDef._id){
         return new TextWidget()
     }
 }

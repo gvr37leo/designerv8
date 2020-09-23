@@ -1,23 +1,71 @@
-function create(knot:Knot):Promise<string>{
-    return null
+function createList( data:Knot[]):Promise<{insertedIds:string[],status:string}>{
+    return fetch(`/api/data`,{
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        method:'POST',
+        body:JSON.stringify(data)
+    }).then(res => res.json())
 }
 
-function search(query:Query):Promise<Knot[]>{
-    return null
-}
-
-async function get(knotid:string):Promise<Knot>{
-    var res = await search(genSimpleQuery('_id',knotid))
+async function create(data:Knot):Promise<string>{
+    var res = await createList([data])
     return res[0]
 }
 
-function getChildren(knotid:string):Promise<any[]>{
+
+async function get(knotid:string):Promise<Knot>{
+    var res = await search(genSimpleQuery('_id',knotid))
+    return res.data[0]
+}
+
+function getChildren(knotid:string):Promise<QueryResult<Knot>>{
     return search(genSimpleQuery('parent',knotid))
 }
 
-function remove(knotid:string):Promise<any>{
-    return null
+function search(query:Query):Promise<QueryResult<Knot>>{
+    return fetch(`/api/search/data`,{
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        method:'POST',
+        body:JSON.stringify(query)
+    }).then(res => res.json())
 }
+
+
+function update(knot:Knot):Promise<any>{
+    return fetch(`/api/data/${knot._id}`,{
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        method:'PUT',
+        body:JSON.stringify(knot)
+    })
+}
+
+
+
+function remove(knotid:string):Promise<any>{
+    return removeList([knotid])
+}
+
+function removeList(knotids:string[]){
+    return fetch(`/api/data`,{
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        method:'DELETE',
+        body:JSON.stringify(knotids)
+    })
+}
+
+
+
+
+
+
+
 
 function genSimpleQuery(prop:string,value:any):Query{
     return {
