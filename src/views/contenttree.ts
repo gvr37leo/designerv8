@@ -50,14 +50,26 @@ class ContentTree{
         })
 
         this.designer.eventQueue.listen(EventTypes.knotNameClicked,(data) => {
-            var oldview = this.knotviewsMap.get(this.selectedKnotId)
-            oldview?.namearrowelement?.classList?.remove('selected')
-            this.selectedKnotId = data.knotid
-            var currentview = this.knotviewsMap.get(this.selectedKnotId)
-            
-            currentview.namearrowelement.classList.add('selected')
-            this.designer.navigateToKnot(data.knotid)
+            this.setSelectedKnot(data.knotid)
         })
+    }
+
+    setSelectedKnot(knotid:string){
+        var oldview = this.knotviewsMap.get(this.selectedKnotId)
+        oldview?.namearrowelement?.classList?.remove('selected')
+        this.selectedKnotId = knotid
+        var currentview = this.knotviewsMap.get(this.selectedKnotId)
+        
+        currentview.namearrowelement.classList.add('selected')
+        this.designer.navigateToKnot(knotid)
+    }
+
+    expandTowards(knotid:string){
+        var current = this.knotviewsMap.get(knotid)
+        while(current != null){
+            current.expand()
+            current = this.knotviewsMap.get(current.knot.parent)
+        }
     }
 
     async loadAll(){

@@ -32,6 +32,7 @@ class Designer{
     contenttreeElement: HTMLElement
     rootElement: HTMLElement
     currentView: DetailView
+    urlknotid: string
     // eventforneweventinevenetqueue
 
     constructor(public knots: Knot[],public collectionSrc:string){
@@ -69,10 +70,11 @@ class Designer{
         this.contentTree = new ContentTree(this)
         this.contenttreeElement.appendChild(this.contentTree.rootElement)
         this.contentTree.loadAll().then(views => {
-            views.forEach(v => {
-                v.expand()
-            })
-            //select node using url
+            // views.forEach(v => {
+            //     v.expand()
+            // })
+            this.contentTree.expandTowards(this.urlknotid)
+            this.contentTree.setSelectedKnot(this.urlknotid)
         })
 
         this.eventQueue.listen(EventTypes.create,(data) => {
@@ -80,6 +82,7 @@ class Designer{
         })
 
         this.router.listen(new RegExp(`^/data/([a-zA-Z0-9]+)$`),(res) => {
+            this.urlknotid = res[1]
             get(res[1]).then(knot => {
                 this.mountAndLoad(knot)
             })
