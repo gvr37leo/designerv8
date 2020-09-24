@@ -31,6 +31,7 @@ class Designer{
     viewcontainer: HTMLElement
     contenttreeElement: HTMLElement
     rootElement: HTMLElement
+    currentView: DetailView
     // eventforneweventinevenetqueue
 
     constructor(public knots: Knot[],public collectionSrc:string){
@@ -67,11 +68,14 @@ class Designer{
 
         this.contentTree = new ContentTree(this)
         this.contenttreeElement.appendChild(this.contentTree.rootElement)
-        this.contentTree.loadChildren(null)
+        this.contentTree.loadAll().then(views => {
+            views.forEach(v => {
+                v.expand()
+            })
+            //select node using url
+        })
 
         this.eventQueue.listen(EventTypes.create,(data) => {
-            
-            
             //get currently selected node
         })
 
@@ -86,6 +90,7 @@ class Designer{
 
 
     mount(view:DetailView){
+        this.currentView = view
         emptyHtmlElement(this.viewcontainer)
         this.viewcontainer.appendChild(view.rootelement)
     }

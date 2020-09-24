@@ -6,6 +6,7 @@ class KnotView{
     arrowelement:HTMLElement
     nameelement:HTMLElement
     childrenelement:HTMLElement
+    namearrowelement: HTMLElement
     childrenLoaded = false
 
     constructor(public designer:Designer,public knot:Knot){
@@ -13,10 +14,16 @@ class KnotView{
         
     }
 
+    set(knot:Knot){
+        this.knot = knot
+        this.arrowelement.innerText = this.getMarker()
+        this.nameelement.innerText = this.knot.name
+    }
+
     init(){
         this.rootelement = string2html(`
             <div>
-                <div style="display:flex;">
+                <div style="display:flex;" id="namearrow">
                     <button id="arrow" style="flex-grow:0; cursor:pointer; width:28px;">arrow</button>
                     <div id="name" style="flex-grow:1;" >name</div>
                 </div>
@@ -26,10 +33,10 @@ class KnotView{
 
         this.arrowelement = this.rootelement.querySelector('#arrow')
         this.nameelement = this.rootelement.querySelector('#name')
+        this.namearrowelement = this.rootelement.querySelector('#namearrow')
         this.childrenelement = this.rootelement.querySelector('#children')
 
-        this.arrowelement.innerText = this.getMarker()
-        this.nameelement.innerText = this.knot.name
+        this.set(this.knot)
 
         this.arrowelement.addEventListener('click', e => {
             this.toggle()
@@ -39,12 +46,9 @@ class KnotView{
         this.nameelement.addEventListener('click', e => {
             this.designer.eventQueue.trigger(EventTypes.knotNameClicked,{knotid:this.knot._id})
         })
+        
         return this
     }
-
-    
-
-    
 
     expand(){
         this.expanded = true

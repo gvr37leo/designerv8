@@ -1,12 +1,12 @@
 class ContentTree{
 
     // knots: Knot[]
-    knotviews:KnotView[] = []
+    knotviewsMap = new Map<string,KnotView>();
     rootElement: HTMLElement
     newbuttonElement: HTMLElement
     knotsElement: HTMLElement
     contextpanel: HTMLElement
-    selectedKnot:string = null
+    selectedKnotId:string = null
 
     constructor(public designer:Designer){
 
@@ -31,7 +31,7 @@ class ContentTree{
         for(let objdef of this.designer.objdefinitions){
             let html = string2html(`<button>new ${objdef.name}</button>`)
             html.addEventListener('click', e => {
-                let knot = new Knot('blank',this.selectedKnot,objdef._id)
+                let knot = new Knot('blank',this.designer.currentView.collectData()._id,objdef._id)
                 create(knot).then(id => {
                     knot._id = id
                     this.designer.navigateToKnot(knot._id)
@@ -42,7 +42,7 @@ class ContentTree{
 
         this.designer.eventQueue.listen(EventTypes.knotArrowClicked,(data) => {
             
-            let knotview = this.knotviews.find(kv => kv.knot._id == data.knotid)
+            let knotview = this.knotviewsMap.get(data.knotid)
             if(knotview.childrenLoaded == false){
                 knotview.childrenLoaded = true
                 this.loadChildren(data.knotid)
@@ -50,26 +50,71 @@ class ContentTree{
         })
 
         this.designer.eventQueue.listen(EventTypes.knotNameClicked,(data) => {
-            this.selectedKnot = data.knotid
+            var oldview = this.knotviewsMap.get(this.selectedKnotId)
+            oldview?.namearrowelement?.classList?.remove('selected')
+            this.selectedKnotId = data.knotid
+            var currentview = this.knotviewsMap.get(this.selectedKnotId)
+            
+            currentview.namearrowelement.classList.add('selected')
             this.designer.navigateToKnot(data.knotid)
         })
     }
 
+    async loadAll(){
+        var query = genSimpleQuery('','')
+        query.filter = []
+        var res = await search(query)
+        return this.upsertMany(res.data)
+    }
     
     async loadChildren(knotid:string){
-        let knotview = this.knotviews.find(k => k.knot._id == knotid)
         let children = await getChildren(knotid)
-        for(let child of children.data){
-            let childkv = new KnotView(this.designer,child).init()
-            this.knotviews.push(childkv)
-            if(knotview == null){
-                this.knotsElement.appendChild(childkv.rootelement)
-            }else{
-                knotview.childrenelement.appendChild(childkv.rootelement)
-            }
-            
-        }
+        return this.upsertMany(children.data)
     }
+
+    async loadAncestors(knotid:string){
+        let ancestors = await getAncestors(knotid)
+        let knotviews = this.upsertMany(ancestors)
+        knotviews.forEach(kv => kv.expand())
+        return knotviews
+    }
+
+    async loadDescendants(knotid:string){
+        let descendants = await getDescendants(knotid)
+        let knotviews = this.upsertMany(descendants)
+        knotviews.forEach(kv => kv.expand())
+        return knotviews
+    }
+
+    upsertMany(knots:Knot[]){
+        let needAttaching:Knot[] = []
+        for(let knot of knots){
+            let view = this.knotviewsMap.get(knot._id)
+            if(view == null){
+                view = new KnotView(this.designer,knot).init()
+                this.knotviewsMap.set(knot._id,view)
+                needAttaching.push(knot)
+            }else{
+                view.set(knot)
+            }
+        }
+
+        for(let knot of needAttaching){
+            let view = this.knotviewsMap.get(knot._id)
+            if(knot.parent == null){
+                this.knotsElement.appendChild(view.rootelement)
+            }else{
+                let parentview = this.knotviewsMap.get(knot.parent)
+                parentview.childrenelement.appendChild(view.rootelement)
+            }
+        }
+        return knots.map(k => this.knotviewsMap.get(k._id))
+    }
+
+    upsert(knot:Knot){
+        this.upsertMany([knot])
+    }
+
 }
 
 //contenttree side panel with create for every objdef

@@ -145,8 +145,31 @@ function start(){
 
             let collection = db.collection(req.params.object)
             try {
+                for(var knotid of req.body){
+                    var descendants = await findDescendants(knotid)
+                    await collection.deleteMany({_id: { $in: descendants.map(knot => mongodb.ObjectID(knot._id))}})
+                }
                 var result = await collection.deleteMany({_id: { $in: req.body.map(id => mongodb.ObjectID(id))}})
+                
                 res.send({status:'success'});
+            } catch (error) {
+                res.status(500).send(error)
+            }
+        })
+
+        app.get('/api/:object/:id/ancestors',async function(req, res){
+            try {
+                var ancestors = await findAncestors(req.params.id)
+                res.send(ancestors);
+            } catch (error) {
+                res.status(500).send(error)
+            }
+        })
+
+        app.get('/api/:object/:id/descendants',async function(req, res){
+            try {
+                var descendants = await findDescendants(req.params.id)
+                res.send(descendants);
             } catch (error) {
                 res.status(500).send(error)
             }
@@ -172,11 +195,11 @@ function start(){
         }
 
         async function findDescendants(knotid){
-            var children = await findChildren()
+            var children = await findChildren(knotid)
             var res = children.slice()
 
             for(var child of children){
-                var childsdescendants = await findDescendants(child._id)
+                var childsdescendants = await findDescendants(child._id.toString())
                 res = res.concat(childsdescendants)
             }
             return res

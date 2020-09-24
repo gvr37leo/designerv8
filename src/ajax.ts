@@ -23,6 +23,24 @@ function getChildren(knotid:string):Promise<QueryResult<Knot>>{
     return search(genSimpleQuery('parent',knotid))
 }
 
+async function getAncestors(knotid:string):Promise<Knot[]>{
+    return fetch(`/api/data/${knotid}/ancestors`,{
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        method:'GET',
+    }).then(res => res.json())
+}
+
+async function getDescendants(knotid:string):Promise<Knot[]>{
+    return fetch(`/api/data/${knotid}/descendants`,{
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        method:'GET',
+    }).then(res => res.json())
+}
+
 function search(query:Query):Promise<QueryResult<Knot>>{
     return fetch(`/api/search/data`,{
         headers:{

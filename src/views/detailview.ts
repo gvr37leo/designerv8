@@ -72,7 +72,9 @@ class DetailView{
             //get data from view and send it to update
         })
         this.deletebuttonElement.addEventListener('click',() => {
-            remove(this.collectData()._id)
+            var data = this.collectData()
+            remove(data._id)
+            this.designer.navigateToKnot(data.parent)
             //get the id field and sent it to delete
         })
 
