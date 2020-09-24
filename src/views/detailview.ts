@@ -93,7 +93,8 @@ class DetailView{
             widgethull.querySelector('#asd').appendChild(widget.rootElement)
             this.widgetcontainer.appendChild(widgethull)
         }
-        
+        var listview = new ListView(this.designer,cardef)
+        this.tabscontainer.appendChild(listview.rootelement)
     }
 
     loadData(data:any){
