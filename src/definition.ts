@@ -57,6 +57,7 @@ class ObjDef extends Knot{
 
 
 
+
 class Attribute extends Knot{
     constructor(
         name:string,parent:string,

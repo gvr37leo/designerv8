@@ -73,8 +73,10 @@ class Designer{
             // views.forEach(v => {
             //     v.expand()
             // })
-            this.contentTree.expandTowards(this.urlknotid)
-            this.contentTree.setSelectedKnot(this.urlknotid)
+            if(this.urlknotid){
+                this.contentTree.expandTowards(this.urlknotid)
+                this.contentTree.setSelectedKnot(this.urlknotid)
+            }
         })
 
         this.eventQueue.listen(EventTypes.create,(data) => {
@@ -84,11 +86,21 @@ class Designer{
         this.router.listen(new RegExp(`^/data/([a-zA-Z0-9]+)$`),(res) => {
             this.urlknotid = res[1]
             get(res[1]).then(knot => {
-                this.mountAndLoad(knot)
+                if(knot != null){
+                    this.mountAndLoad(knot)
+                }else{
+                    console.log(404)
+                }
+
+                
             })
         })
 
         this.router.trigger(window.location.pathname)
+    }
+
+    getCurrentId(){
+        return this.urlknotid
     }
 
 
@@ -117,4 +129,13 @@ class Designer{
         this.router.navigate(`/data/${knotid}`)
     }
 
+    getAttributeNameProp(attribute:Attribute){
+        var debug  = true
+        if(debug){
+            return attribute.name
+        }else{
+            return attribute._id
+        }
+        
+    }
 }

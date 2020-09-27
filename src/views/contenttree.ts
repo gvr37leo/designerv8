@@ -31,7 +31,7 @@ class ContentTree{
         for(let objdef of this.designer.objdefinitions){
             let html = string2html(`<button>new ${objdef.name}</button>`)
             html.addEventListener('click', e => {
-                let knot = new Knot('blank',this.designer.currentView.collectData()._id,objdef._id)
+                let knot = new Knot(objdef.name,this.selectedKnotId,objdef._id)
                 create(knot).then(id => {
                     knot._id = id
                     this.designer.navigateToKnot(knot._id)
@@ -55,13 +55,15 @@ class ContentTree{
     }
 
     setSelectedKnot(knotid:string){
-        var oldview = this.knotviewsMap.get(this.selectedKnotId)
-        oldview?.namearrowelement?.classList?.remove('selected')
-        this.selectedKnotId = knotid
-        var currentview = this.knotviewsMap.get(this.selectedKnotId)
-        
-        currentview.namearrowelement.classList.add('selected')
-        this.designer.navigateToKnot(knotid)
+        if(this.knotviewsMap.get(knotid) != null){
+            var oldview = this.knotviewsMap.get(this.selectedKnotId)
+            oldview?.namearrowelement?.classList?.remove('selected')
+            this.selectedKnotId = knotid
+            var currentview = this.knotviewsMap.get(this.selectedKnotId)
+            
+            currentview.namearrowelement.classList.add('selected')
+            this.designer.navigateToKnot(knotid)
+        }
     }
 
     expandTowards(knotid:string){

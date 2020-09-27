@@ -100,7 +100,7 @@ class DetailView{
     loadData(data:any){
         var attributes = this.designer.getAttributes(this.objdef._id)
         for(var attribute of attributes){
-            this.setAttributeData(attribute._id,data[attribute.name])
+            this.setAttributeData(attribute._id,data[this.designer.getAttributeNameProp(attribute)])
         }
     }
 
@@ -108,7 +108,7 @@ class DetailView{
         var res:any = {}
         var attributes = this.designer.getAttributes(this.objdef._id)
         for(var attribute of attributes){
-            res[attribute.name] = this.getAttributeData(attribute._id)
+            res[this.designer.getAttributeNameProp(attribute)] = this.getAttributeData(attribute._id)
         }
         return res
     }

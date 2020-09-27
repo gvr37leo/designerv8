@@ -69,14 +69,15 @@ let metaknots:Knot[] = [selfdef,datatypeholder,stringDef,dateDef,rangeDef,number
 
 let rootdef = new ObjDef('root',null,false,null,true)
 
-let persondef = new ObjDef('person',rootdef._id,false,null,false)
-let phonenumberdef = new Attribute('phonenumber',persondef._id,stringDef._id,null)
-let frienddef = new Attribute('friend',persondef._id,pointerDef._id,persondef._id)
 
 let cardef = new ObjDef('car',rootdef._id,false,null,false)
 let platedef = new Attribute('plate',cardef._id,stringDef._id,null)
 
+let persondef = new ObjDef('person',rootdef._id,true,cardef._id,false)
+let phonenumberdef = new Attribute('phonenumber',persondef._id,stringDef._id,null)
+let frienddef = new Attribute('friend',persondef._id,pointerDef._id,persondef._id)
 let dataknots:Knot[] = [rootdef,persondef,phonenumberdef,frienddef,cardef,platedef]
+
 dataknots.push(...generateKnotAttributes(rootdef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)) 
 dataknots.push(...generateKnotAttributes(persondef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id)) 
 dataknots.push(...generateKnotAttributes(cardef,stringDef._id,dateDef._id,rangeDef._id,numberDef._id,pointerDef._id,idDef._id,booleanDef._id,objectdefinition._id))

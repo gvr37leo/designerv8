@@ -125,7 +125,7 @@ type QuerySort = {
 
 type Filter = {
     propname:string
-    type:FilterType
+    type:string
     value:string
 }
 
