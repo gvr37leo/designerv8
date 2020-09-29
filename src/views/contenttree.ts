@@ -30,12 +30,12 @@ class ContentTree{
 
         for(let objdef of this.designer.objdefinitions){
             let html = string2html(`<button>new ${objdef.name}</button>`)
-            html.addEventListener('click', e => {
+            html.addEventListener('click',async e => {
                 let knot = new Knot(objdef.name,this.selectedKnotId,objdef._id)
-                create(knot).then(id => {
-                    knot._id = id
-                    this.designer.navigateToKnot(knot._id)
-                })
+                var id = await create(knot)
+                knot._id = id
+                await this.loadChildren(this.selectedKnotId)
+                this.designer.navigateToKnot(knot._id)
             })
             this.contextpanel.appendChild(html)
         }
@@ -98,6 +98,14 @@ class ContentTree{
         let knotviews = this.upsertMany(descendants)
         knotviews.forEach(kv => kv.expand())
         return knotviews
+    }
+
+    remove(knot:Knot){
+        var self = this.knotviewsMap.get(knot._id)
+        var parent = this.knotviewsMap.get(knot.parent)
+        this.knotviewsMap.delete(knot._id)
+        parent.childrenelement.removeChild(self.rootelement)
+        //todo:children of knotview should be recursively deleted from this.knotsviewMap
     }
 
     upsertMany(knots:Knot[]){

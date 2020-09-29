@@ -22,6 +22,8 @@ function emptyHtmlElement(el:HTMLElement){
 }
 
 function createWidget(attribute:Attribute,designer:Designer){
+    //get datatype
+    //check if name of datatype == "boolean"
     if(attribute.dataType == booleanDef._id){
         return new BooleanWidget()
     }

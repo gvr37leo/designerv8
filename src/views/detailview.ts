@@ -71,11 +71,14 @@ class DetailView{
             update(this.collectData())
             //get data from view and send it to update
         })
-        this.deletebuttonElement.addEventListener('click',() => {
+        this.deletebuttonElement.addEventListener('click',async () => {
             var data = this.collectData()
-            remove(data._id)
+            await remove(data._id)
             this.designer.navigateToKnot(data.parent)
-            //get the id field and sent it to delete
+            this.designer.contentTree.remove(data)
+            this.designer.contentTree.loadChildren(data.parent)
+            this.designer.contentTree.setSelectedKnot(data.parent)
+            
         })
 
         this.attributes = this.designer.attributes.filter(a => a.parent == objdef._id)
