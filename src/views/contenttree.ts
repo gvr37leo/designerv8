@@ -28,14 +28,16 @@ class ContentTree{
             
         })
 
-        for(let objdef of this.designer.objdefinitions){
+        for(let objdef of this.designer.dataAppdef.objdefs){
             let html = string2html(`<button>new ${objdef.name}</button>`)
             html.addEventListener('click',async e => {
+                
                 let knot = new Knot(objdef.name,this.selectedKnotId,objdef._id)
                 var id = await create(knot)
                 knot._id = id
                 await this.loadChildren(this.selectedKnotId)
                 this.designer.navigateToKnot(knot._id)
+                this.knotviewsMap.get(this.selectedKnotId).expand()
             })
             this.contextpanel.appendChild(html)
         }

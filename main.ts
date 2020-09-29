@@ -23,9 +23,10 @@
 
 
 let selfdef = new ObjDef('appdef',null,false,null,true,'this should be replaced')
-selfdef.objdef = selfdef._id
+
 
 let objdefDef = new ObjDef('objdef',selfdef._id,false,null,false,'this should be replaced')
+selfdef.objdef = objdefDef._id
 objdefDef.objdef = objdefDef._id
 
 
@@ -71,7 +72,8 @@ let pointsToObjectDef = new Attribute('pointsToObject',attrDef._id,pointerDef._i
 
 let metaknots:Knot[] = [selfdef,knotDef,datatypeDef,datatypeholder,stringDef,dateDef,rangeDef,numberDef,pointerDef,idDef,booleanDef,objdefDef,allowAsRootNode,attrDef,datatypeAttributeDef,pointsToObjectDef,]
 
-// let metadesigner = new Designer(metaknots,metaknots,'metadata')
+let metadesigner = new Designer(metaknots.slice(),metaknots.slice(),'metadata')
+this.document.body.appendChild(metadesigner.rootElement)
 //need something to identify objs,attributes,appdefs and datatypes for rendering (maybe in appdef set ids of each type, or hardcoded)
 
 
@@ -100,8 +102,8 @@ let dataknots:Knot[] = [rootdef,persondef,phonenumberdef,frienddef,cardef,plated
 // dataknots.push(...generateKnotAttributes(cardef,objectdefinition._id,metaknots))
 // dataknots.push(...generateKnotAttributes(folderDef,objectdefinition._id,metaknots))
 
-let datadesigner = new Designer(dataknots,metaknots,'data',)
-this.document.body.appendChild(datadesigner.rootElement)
+// let datadesigner = new Designer(dataknots.slice(),metaknots.slice(),'data',)
+// this.document.body.appendChild(datadesigner.rootElement)
 
 
 

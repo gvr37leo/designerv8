@@ -23,10 +23,10 @@ class Designer{
     listViewsMap = new Map<string,ListView>()
     eventQueue:EventQueue
 
-    appdef: AppDef
-    objdefinitions: ObjDef[]
-    datatypes: Datatype[]
-    attributes: Attribute[]
+    // appdef: AppDef
+    // objdefinitions: ObjDef[]
+    // datatypes: Datatype[]
+    // attributes: Attribute[]
     navbarelement: HTMLElement
     viewcontainer: HTMLElement
     contenttreeElement: HTMLElement
@@ -37,9 +37,9 @@ class Designer{
     dataAppdef: AppdefCollection
     // eventforneweventinevenetqueue
 
-    constructor(public datadefknots: Knot[],public selfdefknots:Knot[],public collectionSrc:string){
-        this.datadefknots = datadefknots.slice()
-        this.selfdefknots = datadefknots.slice()
+    constructor(datadefknots: Knot[],selfdefknots:Knot[],public collectionSrc:string){
+        // this.datadefknots = datadefknots.slice()
+        // this.selfdefknots = datadefknots.slice()
         this.eventQueue = new EventQueue()
         this.router = new Router()
         this.rootElement = string2html(`
@@ -60,13 +60,13 @@ class Designer{
         this.selfAppdef = this.organizeMetaKnots(selfdefknots,selfdefknots)
         this.dataAppdef = this.organizeMetaKnots(datadefknots,selfdefknots)
 
-        this.appdef = this.dataAppdef.appdef as AppDef
-        this.objdefinitions = this.dataAppdef.objdefs as ObjDef[]
-        this.datatypes = this.dataAppdef.datatypes as Datatype[]
-        this.attributes = this.dataAppdef.attributes as Attribute[]
+        // this.appdef = this.dataAppdef.appdef as AppDef
+        // this.objdefinitions = this.dataAppdef.objdefs as ObjDef[]
+        // this.datatypes = this.dataAppdef.datatypes as Datatype[]
+        // this.attributes = this.dataAppdef.attributes as Attribute[]
 
-        for(let obj of this.objdefinitions){
-            this.datadefknots.push(...this.generateKnotAttributes(obj))
+        for(let obj of this.dataAppdef.objdefs){
+            this.dataAppdef.attributes.push(...this.generateKnotAttributes(obj))
             let dv = new DetailView(this,obj)
             let lv = new ListView(this,obj)
             this.detalViewsMap.set(obj._id,dv)
@@ -120,12 +120,13 @@ class Designer{
         dv.loadData(knot)
     }
 
+
     getObjDef(objdefid:string):ObjDef{
-        return this.objdefinitions.find(o => o._id == objdefid)
+        return this.dataAppdef.objdefs.find(o => o._id == objdefid)
     }
 
     getAttributes(objdefid:string):Attribute[]{
-        return this.attributes.filter(a => a.parent == objdefid)
+        return this.dataAppdef.attributes.filter(a => a.parent == objdefid)
     }
 
     navigateToKnot(knotid:string){

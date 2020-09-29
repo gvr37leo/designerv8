@@ -81,7 +81,7 @@ class DetailView{
             
         })
 
-        this.attributes = this.designer.attributes.filter(a => a.parent == objdef._id)
+        this.attributes = this.designer.getAttributes(objdef._id)
         for(var attribute of this.attributes){
             var widget:Widget = this.designer.createWidget(attribute,designer)
             this.widgetMap.set(attribute._id,widget)
@@ -96,7 +96,7 @@ class DetailView{
             widgethull.querySelector('#asd').appendChild(widget.rootElement)
             this.widgetcontainer.appendChild(widgethull)
         }
-        var listview = new ListView(this.designer,cardef)
+        var listview = new ListView(this.designer,objdef)
         this.tabscontainer.appendChild(listview.rootelement)
     }
 
