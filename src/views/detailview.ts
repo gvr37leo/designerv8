@@ -83,7 +83,7 @@ class DetailView{
 
         this.attributes = this.designer.attributes.filter(a => a.parent == objdef._id)
         for(var attribute of this.attributes){
-            var widget:Widget = createWidget(attribute,designer)
+            var widget:Widget = this.designer.createWidget(attribute,designer)
             this.widgetMap.set(attribute._id,widget)
             var widgethull = string2html(`
                 <div>

@@ -176,6 +176,39 @@ class Designer{
             dataknots.filter(k => knotmap.get(k.objdef).name == 'knot') as any,
         )
     }
+
+    
+    createWidget(attribute:Attribute,designer:Designer){
+        var boolean = designer.selfAppdef.datatypes.find(d => d.name == 'boolean')
+        var date = designer.selfAppdef.datatypes.find(d => d.name == 'date')
+        var id = designer.selfAppdef.datatypes.find(d => d.name == 'id')
+        var number = designer.selfAppdef.datatypes.find(d => d.name == 'number')
+        var pointer = designer.selfAppdef.datatypes.find(d => d.name == 'pointer')
+        var range = designer.selfAppdef.datatypes.find(d => d.name == 'range')
+        var string = designer.selfAppdef.datatypes.find(d => d.name == 'string')
+
+        if(attribute.dataType == boolean._id){
+            return new BooleanWidget()
+        }
+        if(attribute.dataType == date._id){
+            return new DateWidget()
+        }
+        if(attribute.dataType == id._id){
+            return new IdWidget(attribute,designer)
+        }
+        if(attribute.dataType == number._id){
+            return new NumberWidget()
+        }
+        if(attribute.dataType == pointer._id){
+            return new PointerWidget(attribute,designer)
+        }
+        if(attribute.dataType == range._id){
+            return new RangeWidget()
+        }
+        if(attribute.dataType == string._id){
+            return new TextWidget()
+        }
+    }
 }
 
 class AppdefCollection{
