@@ -1,4 +1,5 @@
 /// <reference path="./src/designer.ts" />
+/// <reference path="./src/gamedef.ts" />
 
 
 //definition and data in same database
@@ -14,12 +15,6 @@
 //maybe have 2 designers 1 to edit metadata and 1 to edit data
 //reload the data designer when you edit in metadatadesigner
 //maybe master listviews for each objdef
-
-
-
-
-
-
 
 
 let selfdef = new ObjDef('appdef',null,false,null,true,'this should be replaced')

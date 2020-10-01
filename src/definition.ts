@@ -26,7 +26,7 @@ class AppDef extends Knot{
     
     debug:boolean = true
 
-    constructor(name:string,parent:string,isList:boolean,listTypeObjdef:string,objdef:string
+    constructor(name:string,parent:string,objdef:string
         ){
         super(name,parent,objdef)
         // this.objdef = this._id

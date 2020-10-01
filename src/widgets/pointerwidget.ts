@@ -19,6 +19,8 @@ class PointerWidget extends Widget{
         
         //gaat nu fout omdat hier gezocht wordt in de database terwijl data hardcoded is
         //misschien een toggle om te kunnen switchen
+        //of gewoon ook in desigmetadataknots kijken
+        //of point naar de database id
         search(genSimpleQuery('parent',this.attribute.selectKnot)).then(res => {
             for(var item of res.data){
                 this.inputelement.appendChild(string2html(`<option value="${item._id}">${item.name}</option>`))
