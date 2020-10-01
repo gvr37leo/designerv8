@@ -55,7 +55,7 @@ class Attribute extends Knot{
     constructor(
         name:string,parent:string,
         public dataType:string,
-        public pointsToObjectDef:string,objdef:string,
+        public selectKnot:string,objdef:string,
     ){
         super(name,parent,objdef)
         // this.objdef = this._id

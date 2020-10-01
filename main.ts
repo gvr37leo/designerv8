@@ -51,11 +51,11 @@ let booleanDef = new Knot('boolean',datatypeholder._id,datatypeDef._id)
 //objdef attributes
 let allowAsRootNode = new Attribute('allowAsRootNode',objdefDef._id,booleanDef._id,null,attrDef._id)
 let islist = new Attribute('isList',objdefDef._id,booleanDef._id,null,attrDef._id)
-let listtype = new Attribute('listTypeObjdef',objdefDef._id,pointerDef._id,objdefDef._id,attrDef._id)
+let listtype = new Attribute('listTypeObjdef',objdefDef._id,pointerDef._id,selfdef._id,attrDef._id)
 
 //attribute attributes
-let datatypeAttributeDef = new Attribute('datatype',attrDef._id,pointerDef._id,datatypeDef._id,attrDef._id)
-let pointsToObjectDef = new Attribute('pointsToObject',attrDef._id,pointerDef._id,datatypeDef._id,attrDef._id)
+let datatypeAttributeDef = new Attribute('datatype',attrDef._id,pointerDef._id,datatypeholder._id,attrDef._id)
+let pointsToObjectDef = new Attribute('pointsToObject',attrDef._id,pointerDef._id,selfdef._id,attrDef._id)
 
 
 //get metadefinition tree

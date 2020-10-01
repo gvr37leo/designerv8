@@ -41,7 +41,10 @@ function start(){
             }
             for(var opt of query.filter){
                 if(opt.propname == '_id'){
-                    filter[opt.propname] = {[[filtertypes[opt.type]]]:new mongodb.ObjectID(opt.value)}
+                    try {
+                        filter[opt.propname] = {[[filtertypes[opt.type]]]:new mongodb.ObjectID(opt.value)}
+                    } catch (error) {
+                    }
                 }else{
                     filter[opt.propname] = {[[filtertypes[opt.type]]]:opt.value}
                 }
