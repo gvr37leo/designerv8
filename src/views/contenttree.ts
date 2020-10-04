@@ -3,7 +3,7 @@ class ContentTree{
     // knots: Knot[]
     knotviewsMap = new Map<string,KnotView>();
     rootElement: HTMLElement
-    newbuttonElement: HTMLElement
+    deleteall: HTMLElement
     knotsElement: HTMLElement
     contextpanel: HTMLElement
     selectedKnotId:string = null
@@ -12,7 +12,7 @@ class ContentTree{
 
         this.rootElement = string2html(`<div style="border:1px solid black; margin:10px; padding:10px;" >
             <div>
-                <button style="display:none;" id="newbutton">new</button>
+                <button style="" id="deleteall">deleteall</button>
             </div>
             <div style="display:flex;">
                 <div id="knots" style="margin-right:10px;"></div>
@@ -21,11 +21,14 @@ class ContentTree{
             </div>
             
         </div>`)
-        this.newbuttonElement = this.rootElement.querySelector('#newbutton')
+        this.deleteall = this.rootElement.querySelector('#deleteall')
         this.knotsElement = this.rootElement.querySelector('#knots')
         this.contextpanel = this.rootElement.querySelector('#contextpanel')
-        this.newbuttonElement.addEventListener('click',e => {
-            
+        this.deleteall.addEventListener('click',async e => {
+            var query = genSimpleQuery('','')
+            query.filter = []
+            var knots = await search(query)
+            removeList(knots.data.map(k => k._id))
         })
 
         for(let objdef of this.designer.dataAppdef.objdefs){

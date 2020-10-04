@@ -20,7 +20,13 @@ class Knot{
 }
 
 
-
+class FolderDef extends Knot{
+    constructor(name:string,parent:string,objdef:string,public foldertype:string
+        ){
+        super(name,parent,objdef)
+        // this.objdef = this._id
+    }
+}
 
 class AppDef extends Knot{
     
@@ -53,9 +59,11 @@ class ObjDef extends Knot{
 
 class Attribute extends Knot{
     constructor(
-        name:string,parent:string,
+        name:string,
+        parent:string,
         public dataType:string,
-        public selectKnot:string,objdef:string,
+        public selectKnot:string,
+        objdef:string,
     ){
         super(name,parent,objdef)
         // this.objdef = this._id

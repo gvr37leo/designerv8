@@ -67,8 +67,8 @@ class DetailView{
             })
             //just straight up collect the data from view and sent it to create
         })
-        this.savebuttonElement.addEventListener('click',() => {
-            update(this.collectData())
+        this.savebuttonElement.addEventListener('click',async () => {
+            this.save()
             //get data from view and send it to update
         })
         this.deletebuttonElement.addEventListener('click',async () => {
@@ -89,15 +89,21 @@ class DetailView{
                 <div>
                     <label>
                         ${attribute.name}
-                        <div id="asd"/>
+                        <div id="widgetspot"/>
                     </label>
                 </div>
             `)
-            widgethull.querySelector('#asd').appendChild(widget.rootElement)
+            widgethull.querySelector('#widgetspot').appendChild(widget.rootElement)
             this.widgetcontainer.appendChild(widgethull)
         }
         var listview = new ListView(this.designer,objdef)
         this.tabscontainer.appendChild(listview.rootelement)
+    }
+
+    async save(){
+        var data = this.collectData()
+        await update(data)
+        this.designer.contentTree.loadChildren(data.parent)
     }
 
     loadData(data:any){

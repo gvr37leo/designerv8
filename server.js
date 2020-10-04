@@ -25,6 +25,18 @@ function start(){
     client.connect().then(() => {
         console.log('connected to mongo');
         let db = client.db(databasename)
+
+        app.post('/api/import',async (req,res) => {
+            let collection = db.collection('data')
+    
+            try {
+                var result = await collection.insertMany(req.body)
+                res.send(Object.values(result.insertedIds).map(id => id.toString()))
+            } catch (error) {
+                res.status(500).send(error)
+            }
+        })
+
         
         app.post('/api/search/:object',async function(req, res){
             let collection = db.collection(req.params.object)
@@ -40,14 +52,7 @@ function start(){
                 'regex':'$regex',
             }
             for(var opt of query.filter){
-                if(opt.propname == '_id'){
-                    try {
-                        filter[opt.propname] = {[[filtertypes[opt.type]]]:new mongodb.ObjectID(opt.value)}
-                    } catch (error) {
-                    }
-                }else{
-                    filter[opt.propname] = {[[filtertypes[opt.type]]]:opt.value}
-                }
+                filter[opt.propname] = {[[filtertypes[opt.type]]]:opt.value}
             }
             var sort = {}
             for(var opt of query.sort){
@@ -113,10 +118,11 @@ function start(){
             let collection = db.collection(req.params.object)
     
             for(let item of req.body){
-                delete item._id
+                item._id = new mongodb.ObjectID().toString()
                 item.createdAt = Date.now()
             }
             try {
+                
                 var result = await collection.insertMany(req.body)
                 res.send(Object.values(result.insertedIds).map(id => id.toString()))
             } catch (error) {
@@ -132,7 +138,7 @@ function start(){
             delete req.body._id
             req.body.lastupdate = new Date().getTime()
             try {
-                var result = await collection.updateOne({_id:new mongodb.ObjectID(req.params.id)}, {$set:req.body})
+                var result = await collection.updateOne({_id:req.params.id}, {$set:req.body})
                 res.send({status:'success'});
             } catch (error) {
                 res.status(500).send(error)
@@ -150,9 +156,9 @@ function start(){
             try {
                 for(var knotid of req.body){
                     var descendants = await findDescendants(knotid)
-                    await collection.deleteMany({_id: { $in: descendants.map(knot => mongodb.ObjectID(knot._id))}})
+                    await collection.deleteMany({_id: { $in: descendants.map(knot => knot._id)}})
                 }
-                var result = await collection.deleteMany({_id: { $in: req.body.map(id => mongodb.ObjectID(id))}})
+                var result = await collection.deleteMany({_id: { $in: req.body}})
                 
                 res.send({status:'success'});
             } catch (error) {
@@ -178,6 +184,18 @@ function start(){
             }
         })
 
+        app.get('/api/:object/:id/descendantsAndSelf',async function(req, res){
+            try {
+                var descendants = await findDescendantsAndSelf(req.params.id)
+                res.send(descendants);
+            } catch (error) {
+                res.status(500).send(error)
+            }
+        })
+
+
+        
+
         async function findAncestors(knot){
             var res = []
             var parent = findParent(knot)
@@ -194,7 +212,7 @@ function start(){
         }
 
         async function findKnot(knotid){
-            return await db.collection('data').findOne({_id:new mongodb.ObjectID(knotid)})
+            return await db.collection('data').findOne({_id:knotid})
         }
 
         async function findDescendants(knotid){
@@ -209,8 +227,15 @@ function start(){
         }
 
         async function findChildren(knotid){
-            var res = await db.collection('data').find({parent:knotid}).toArray()
+            var res = await db.collection('data').find({parent:knotid}).sort({createdAt:-1}).toArray()
             return res
+        }
+
+        async function findDescendantsAndSelf(knotid){
+            var self = await findKnot(knotid)
+            var descendants = await findDescendants(knotid)
+            
+            return [self,...descendants]
         }
 
         

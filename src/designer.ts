@@ -35,6 +35,8 @@ class Designer{
     urlknotid: string
     selfAppdef: AppdefCollection
     dataAppdef: AppdefCollection
+    importbtn: HTMLElement
+    importtextarea: HTMLTextAreaElement
     // eventforneweventinevenetqueue
 
     constructor(datadefknots: Knot[],selfdefknots:Knot[],public collectionSrc:string){
@@ -45,6 +47,12 @@ class Designer{
         this.rootElement = string2html(`
             <div>
                 <div id="navbar"></div>
+                <div style="display:flex; flex-direction:column; align-items:start">
+                    <button id="importbtn">import</button>
+                    <label>
+                        <textarea id="importtextarea"></textarea>
+                    </label>
+                </div>
                 <div style="display:flex;">
                     <div id="contenttree"></div>
                     <div id="viewcontainer"></div>
@@ -54,8 +62,13 @@ class Designer{
         this.navbarelement = this.rootElement.querySelector('#navbar')
         this.viewcontainer = this.rootElement.querySelector('#viewcontainer')
         this.contenttreeElement = this.rootElement.querySelector('#contenttree')
+        this.importbtn = this.rootElement.querySelector('#importbtn')
+        this.importtextarea = this.rootElement.querySelector('#importtextarea')
         
-        
+        this.importbtn.addEventListener('click', e => {
+            var knots = JSON.parse(this.importtextarea.value) 
+            importdata(knots)
+        })
 
         this.selfAppdef = this.organizeMetaKnots(selfdefknots,selfdefknots)
         this.dataAppdef = this.organizeMetaKnots(datadefknots,selfdefknots)
@@ -100,6 +113,13 @@ class Designer{
             })
         })
 
+        document.addEventListener('keydown',e => {
+            if(e.key == 's' && e.ctrlKey == true){
+                e.preventDefault()
+                this.currentView.save()
+            }
+        })
+
         this.router.trigger(window.location.pathname)
     }
 
@@ -134,7 +154,7 @@ class Designer{
     }
 
     getAttributeNameProp(attribute:Attribute){
-        var debug  = true
+        let debug  = true
         if(debug){
             return attribute.name
         }else{
@@ -143,50 +163,51 @@ class Designer{
     }
 
     generateKnotAttributes(objdefKnot:ObjDef){
-        var objdefinitions = this.selfAppdef.objdefs
-        var datatypes = this.selfAppdef.datatypes
-
-        var attributedef = objdefinitions.find(k => k.name == 'attribute')
-        var objdef = objdefinitions.find(k => k.name == 'objdef')
-        var knotdef = objdefinitions.find(k => k.name == 'knot')
-        var string = datatypes.find(k => k.name == 'string')
-        var date = datatypes.find(k => k.name == 'date')
-        // var range = datatypes.find(k => k.name == 'range')
-        // var number = datatypes.find(k => k.name == 'number')
-        var pointer = datatypes.find(k => k.name == 'pointer')
-        var id = datatypes.find(k => k.name == 'id')
-        // var boolean = datatypes.find(k => k.name == 'boolean')
-        var res:Attribute[] = []
+        let objdefinitions = this.selfAppdef.objdefs
+        let datatypes = this.selfAppdef.datatypes
+        
+        let attributedef = objdefinitions.find(k => k.name == 'attribute')
+        let objdef = objdefinitions.find(k => k.name == 'objdef')
+        let folderdef = objdefinitions.find(k => k.name == 'folder')
+        let objfolder = this.selfAppdef.folders.find(k => k.name == 'objdefs')
+        let string = datatypes.find(k => k.name == 'string')
+        let date = datatypes.find(k => k.name == 'date')
+        // let range = datatypes.find(k => k.name == 'range')
+        // let number = datatypes.find(k => k.name == 'number')
+        let pointer = datatypes.find(k => k.name == 'pointer')
+        let id = datatypes.find(k => k.name == 'id')
+        // let boolean = datatypes.find(k => k.name == 'boolean')
+        let res:Attribute[] = []
         res.push(new Attribute('_id',objdefKnot._id,id._id,null,attributedef._id))
         res.push(new Attribute('name',objdefKnot._id,string._id,null,attributedef._id))
-        res.push(new Attribute('parent',objdefKnot._id,pointer._id,knotdef._id,attributedef._id))
-        res.push(new Attribute('objdef',objdefKnot._id,pointer._id,objdef._id,objdef._id))
+        res.push(new Attribute('parent',objdefKnot._id,pointer._id,objfolder._id,attributedef._id))
+        res.push(new Attribute('objdef',objdefKnot._id,pointer._id,objfolder._id,objdef._id))
         res.push(new Attribute('lastupdate',objdefKnot._id,date._id,null,attributedef._id))
         res.push(new Attribute('createdAt',objdefKnot._id,date._id,null,attributedef._id))
         return res
     }
 
     organizeMetaKnots(dataknots:Knot[],metaknots:Knot[]){
-        var knotmap = new Map<string,Knot>()
+        let knotmap = new Map<string,Knot>()
         metaknots.forEach(k => knotmap.set(k._id,k))
         return new AppdefCollection(
             dataknots.find(k => knotmap.get(k.objdef).name  == 'appdef') as any,
             dataknots.filter(k => knotmap.get(k.objdef).name == 'objdef') as any,
             dataknots.filter(k => knotmap.get(k.objdef).name == 'attribute') as any,
             dataknots.filter(k => knotmap.get(k.objdef).name == 'datatype') as any,
-            dataknots.filter(k => knotmap.get(k.objdef).name == 'knot') as any,
+            dataknots.filter(k => knotmap.get(k.objdef).name == 'folder') as any,
         )
     }
 
     
     createWidget(attribute:Attribute,designer:Designer){
-        var boolean = designer.selfAppdef.datatypes.find(d => d.name == 'boolean')
-        var date = designer.selfAppdef.datatypes.find(d => d.name == 'date')
-        var id = designer.selfAppdef.datatypes.find(d => d.name == 'id')
-        var number = designer.selfAppdef.datatypes.find(d => d.name == 'number')
-        var pointer = designer.selfAppdef.datatypes.find(d => d.name == 'pointer')
-        var range = designer.selfAppdef.datatypes.find(d => d.name == 'range')
-        var string = designer.selfAppdef.datatypes.find(d => d.name == 'string')
+        let boolean = designer.selfAppdef.datatypes.find(d => d.name == 'boolean')
+        let date = designer.selfAppdef.datatypes.find(d => d.name == 'date')
+        let id = designer.selfAppdef.datatypes.find(d => d.name == 'id')
+        let number = designer.selfAppdef.datatypes.find(d => d.name == 'number')
+        let pointer = designer.selfAppdef.datatypes.find(d => d.name == 'pointer')
+        let range = designer.selfAppdef.datatypes.find(d => d.name == 'range')
+        let string = designer.selfAppdef.datatypes.find(d => d.name == 'string')
 
         if(attribute.dataType == boolean._id){
             return new BooleanWidget()
@@ -218,7 +239,7 @@ class AppdefCollection{
         public objdefs:ObjDef[],
         public attributes:Attribute[],
         public datatypes:Datatype[],
-        public knots:Knot[],
+        public folders:FolderDef[],
     ){
 
     }

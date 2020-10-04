@@ -1,13 +1,20 @@
 class PointerWidget extends Widget{
     anchorelement: HTMLAnchorElement
     newbutton: HTMLButtonElement
+    selectelement: HTMLSelectElement
     // value:string
 
     constructor(public attribute:Attribute, public designer:Designer){
         super()
-        this.rootElement = string2html(`<span><a href="">goto</a> <select></select><span/>`)
+        this.rootElement = string2html(`<span><a href="">goto</a> <select></select><input/><span/>`)
         this.anchorelement = this.rootElement.querySelector('a')
-        this.inputelement = this.rootElement.querySelector('select') as any
+        this.inputelement = this.rootElement.querySelector('input') as HTMLInputElement
+        this.selectelement = this.rootElement.querySelector('select') as HTMLSelectElement
+        this.selectelement.addEventListener('change', e => {
+            this.inputelement.value = this.selectelement.value
+            this.anchorelement.href = `/data/${this.inputelement.value}`
+        })
+
         this.inputelement.addEventListener('change',e => {
             this.anchorelement.href = `/data/${this.inputelement.value}`
         })
@@ -23,7 +30,7 @@ class PointerWidget extends Widget{
         //of point naar de database id
         search(genSimpleQuery('parent',this.attribute.selectKnot)).then(res => {
             for(var item of res.data){
-                this.inputelement.appendChild(string2html(`<option value="${item._id}">${item.name}</option>`))
+                this.selectelement.appendChild(string2html(`<option value="${item._id}">${item.name}</option>`))
             }
         })
         
@@ -38,6 +45,7 @@ class PointerWidget extends Widget{
         // this.value = val
         this.anchorelement.href = `/data/${val}`
         this.inputelement.value = val
+        this.selectelement.value = val
     }
 
 }

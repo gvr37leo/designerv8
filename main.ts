@@ -19,22 +19,23 @@
 
 let selfdef = new ObjDef('appdef',null,false,null,true,'this should be replaced')
 
+let objdefsholder = new FolderDef('objdefs',selfdef._id,null,null)
+objdefsholder.foldertype = objdefsholder._id
 
-let objdefDef = new ObjDef('objdef',selfdef._id,false,null,false,'this should be replaced')
+let objdefDef = new ObjDef('objdef',objdefsholder._id,false,null,false,'this should be replaced')
 selfdef.objdef = objdefDef._id
 objdefDef.objdef = objdefDef._id
 
 
-let knotDef = new ObjDef('knot',selfdef._id,false,null,false,'this should be replaced')
-knotDef.objdef = objdefDef._id
+let folderDef = new ObjDef('folder',objdefsholder._id,false,null,false,objdefDef._id)
+objdefsholder.objdef = folderDef._id
 
-let datatypeDef = new ObjDef('datatype',selfdef._id,false,null,false,'this should be replaced')
-datatypeDef.objdef = objdefDef._id
 
-let attrDef = new ObjDef('attribute',selfdef._id,false,null,false,'this should be replaced')
-attrDef.objdef = objdefDef._id
+let datatypeDef = new ObjDef('datatype',objdefsholder._id,false,null,false,objdefDef._id)
 
-let datatypeholder = new Knot('datatypes',selfdef._id,knotDef._id)
+let attrDef = new ObjDef('attribute',objdefsholder._id,false,null,false,objdefDef._id)
+
+let datatypeholder = new Knot('datatypes',selfdef._id,folderDef._id)
 let stringDef = new Knot('string',datatypeholder._id,datatypeDef._id)
 let dateDef = new Knot('date',datatypeholder._id,datatypeDef._id)
 let rangeDef = new Knot('range',datatypeholder._id,datatypeDef._id)
@@ -46,11 +47,14 @@ let booleanDef = new Knot('boolean',datatypeholder._id,datatypeDef._id)
 //objdef attributes
 let allowAsRootNode = new Attribute('allowAsRootNode',objdefDef._id,booleanDef._id,null,attrDef._id)
 let islist = new Attribute('isList',objdefDef._id,booleanDef._id,null,attrDef._id)
-let listtype = new Attribute('listTypeObjdef',objdefDef._id,pointerDef._id,selfdef._id,attrDef._id)
+let listtype = new Attribute('listTypeObjdef',objdefDef._id,pointerDef._id,objdefsholder._id,attrDef._id)
 
 //attribute attributes
-let datatypeAttributeDef = new Attribute('datatype',attrDef._id,pointerDef._id,datatypeholder._id,attrDef._id)
-let pointsToObjectDef = new Attribute('pointsToObject',attrDef._id,pointerDef._id,selfdef._id,attrDef._id)
+let datatypeAttributeDef = new Attribute('dataType',attrDef._id,pointerDef._id,datatypeholder._id,attrDef._id)
+let selectKnot = new Attribute('selectKnot',attrDef._id,pointerDef._id,objdefsholder._id,attrDef._id)
+
+//folder
+let foldertype = new Attribute('foldertype',folderDef._id,pointerDef._id,objdefsholder._id,attrDef._id)
 
 
 //get metadefinition tree
@@ -65,11 +69,12 @@ let pointsToObjectDef = new Attribute('pointsToObject',attrDef._id,pointerDef._i
 // generateKnotAttributes(datatypedefinition,objectdefinition._id,metaknots)
 // generateKnotAttributes(knotDef,objectdefinition._id,metaknots)
 
-let metaknots:Knot[] = [selfdef,knotDef,datatypeDef,datatypeholder,stringDef,dateDef,rangeDef,numberDef,pointerDef,idDef,booleanDef,objdefDef,allowAsRootNode,attrDef,datatypeAttributeDef,pointsToObjectDef,]
+let metaknots:Knot[] = [selfdef,folderDef,objdefsholder,datatypeDef,datatypeholder,stringDef,dateDef,rangeDef,numberDef,pointerDef,idDef,booleanDef,objdefDef,allowAsRootNode,attrDef,datatypeAttributeDef,selectKnot,]
 
 let metadesigner = new Designer(metaknots.slice(),metaknots.slice(),'metadata')
 this.document.body.appendChild(metadesigner.rootElement)
 //need something to identify objs,attributes,appdefs and datatypes for rendering (maybe in appdef set ids of each type, or hardcoded)
+
 
 
 
@@ -87,10 +92,11 @@ let persondef = new ObjDef('person',rootdef._id,true,cardef._id,false,objdefDef.
 let phonenumberdef = new Attribute('phonenumber',persondef._id,stringDef._id,null,attrDef._id)
 let frienddef = new Attribute('friend',persondef._id,pointerDef._id,persondef._id,attrDef._id)
 
-let folderDef = new ObjDef('folder',rootdef._id,true,null,false,objdefDef._id)
+let folderDefcomp = new ObjDef('folder',rootdef._id,true,null,false,objdefDef._id)
 
-let dataknots:Knot[] = [rootdef,persondef,phonenumberdef,frienddef,cardef,platedef,folderDef]
+let dataknots:Knot[] = [rootdef,persondef,phonenumberdef,frienddef,cardef,platedef,folderDefcomp]
 
+JSON.stringify(genGameDef())
 
 // dataknots.push(...generateKnotAttributes(rootdef,metaknots))
 // dataknots.push(...generateKnotAttributes(persondef,objectdefinition._id,metaknots)) 

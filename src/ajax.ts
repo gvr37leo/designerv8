@@ -8,6 +8,17 @@ function createList( data:Knot[]):Promise<{insertedIds:string[],status:string}>{
     }).then(res => res.json())
 }
 
+function importdata( data:Knot[]):Promise<{insertedIds:string[],status:string}>{
+    return fetch(`/api/import`,{
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        method:'POST',
+        body:JSON.stringify(data)
+    }).then(res => res.json())
+}
+
+
 async function create(data:Knot):Promise<string>{
     var res = await createList([data])
     return res[0]
